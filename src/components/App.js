@@ -1,29 +1,70 @@
 import React from 'react';
-import Form from './Form'
-import ItemsList from './ItemsList'
+import {connect} from 'react-redux';
+
+import Form from './Form';
+import Itemslist from './ItemsList';
 
 class App extends React.Component {
-  state ={
-    articles: []
-  }
 
-  addArticle = (article=>{
-    const articles = this.state.articles
-    article.id = Date.now()
-    const newArticles = [...articles, article];
-    this.setState({articles: newArticles})
-  })
-  
-  render(){
-    return(
-      <div>
-        <h3>Liste de course</h3>
-        < Form formTitle = "Ajouter un article"
-                addArticle = { this.addArticle }/>
-        < ItemsList />
-      </div>
-    )
-  }
+    render() {
+        return (
+            <div>
+                <h1>Liste de courses</h1>
+                <div>
+                    < Form formTitle="Ajouter des articles à acheter" addArticle={this.props.addArticle} />
+                    <br />
+                    <hr />
+                    < Itemslist articles={this.props.articles} 
+                                removeArticle={this.props.removeArticle} 
+                                editArticle={this.props.editArticle} 
+                    />
+                </div>
+            </div>
+        );
+    }
 }
 
-export default App;
+
+const mapStateToProps = (state) => {
+  return {
+      articles: state.articles
+  };
+};
+
+
+const addArticleActionCreator = (article) => {
+    return {
+        type: 'ADD_ARTICLE',
+        payload: article
+    }
+}
+
+const removeArticleActionCreator = (articleId) => {
+    return {
+        type: 'REMOVE_ARTICLE',
+        payload: articleId
+    }
+}
+
+const editArticleActionCreator = (article) => {
+    return {
+        type: 'EDIT_ARTICLE',
+        payload: article
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addArticle: (article) => {
+            dispatch(addArticleActionCreator(article));        
+        },
+         removeArticle: (articleId) => {
+            dispatch(removeArticleActionCreator(articleId));
+        },
+        editArticle: (article) => {
+            dispatch(editArticleActionCreator(article));
+        }   
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
